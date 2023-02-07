@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         DB::whenQueryingForLongerThan(500, function (Connection $connection){
             logger()
                 ->channel('telegram')
-                ->debug('whenQueryingForLongerThan:'. $connection->query->toSql());
+                ->debug('whenQueryingForLongerThan:'. $connection->query()->toSql());
         });
 
         $kernel = app(Kernel::class);
