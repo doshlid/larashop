@@ -21,30 +21,27 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
-        Model::preventLazyLoading(!app()->isProduction());
-        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
+        Model::shouldBeStrict(!app()->isProduction());
 
-        DB::whenQueryingForLongerThan(500, function (Connection $connection){
-            logger()
-                ->channel('telegram')
-                ->debug('whenQueryingForLongerThan:'. $connection->query()->toSql());
-        });
+        if(app()->isProduction()) {
+            DB::listen(function ($query){
+                if($query->time > 100){
+                    logger()
+                        ->channel('telegram')
+                        ->debug('Query longer then 1ms:' . $query->sql,$query->bindings);
+                }
+            });
 
-        $kernel = app(Kernel::class);
-        $kernel->whenRequestLifecycleIsLongerThan(
-            CarbonInterval::seconds(4),
-            function (){
-                logger()
-                    ->channel('telegram')
-                    ->debug('whenRequestLifecycleIsLongerThan:'. request()->url());
-            }
-        );
+            app(Kernel::class)->whenRequestLifecycleIsLongerThan(
+                CarbonInterval::seconds(4),
+                function () {
+                    logger()
+                        ->channel('telegram')
+                        ->debug('whenRequestLifecycleIsLongerThan:' . request()->url());
+                }
+            );
+        }
     }
 }
