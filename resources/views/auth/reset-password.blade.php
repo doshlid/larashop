@@ -15,7 +15,7 @@
             value="{{ request('email') }}"
             :isError="$errors->has('email')"
         />
-        @error('email')
+        @error('email')3
         <x-forms.error>
             {{ $message }}
         </x-forms.error>
