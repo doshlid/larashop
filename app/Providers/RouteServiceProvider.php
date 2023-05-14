@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\RouteRegistrar;
 use App\Routing\AppRegistrar;
 use Domain\Auth\Routing\AuthRegistrar;
 use RuntimeException;
@@ -9,7 +10,6 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Facades\RateLimiter;
 
 
@@ -75,9 +75,8 @@ class RouteServiceProvider extends ServiceProvider
                     'Cannot map routes \'%s\', it is not a valid routes class',
                     $registrar
                 ));
-
-                (new $registrar)->map($router);
             }
+            (new $registrar)->map($router);
         }
     }
 }
